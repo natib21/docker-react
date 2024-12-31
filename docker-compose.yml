@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  vite-app:
+    build:
+      context: .  # Path to the Dockerfile
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"  # Map Vite's dev server port
+      - "24678:24678" # Vite's WebSocket port for hot reload
+    volumes:
+      - .:/app        # Bind your local project directory to the container
+      - /app/node_modules # Avoid overwriting the container's node_modules
+    command: ["npm", "run", "dev", "--", "--host", "--port", "5173"]
+    environment:
+      - CHOKIDAR_USEPOLLING=true  # Fix for hot reloading
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: ["npm","run","test"]
